@@ -4,25 +4,36 @@ import { Component } from '@angular/core';
   selector: 'app-root',
   template: `
   <div class="container">
-    <h1>To Do List for {{month}}/{{day}}/{{year}}</h1>
-    <h3>{{currentFocus}}</h3>
+    <h1>Tap Room</h1>
+    <button (click)="showAddForm()">Add a Keg</button>
     <ul>
-      <li [class]="priorityColor(currentTask)" (click)="isDone(currentTask)" *ngFor="let currentTask of tasks">{{currentTask.description}} <button (click)="editTask(currentTask)">Edit!</button></li>
+      <li *ngFor="let currentKeg of kegs">Name: {{currentKeg.name}}, Brand: {{currentKeg.brand}}, Price: {{currentKeg.getPrice()}}, Alcohol Content: {{currentKeg.alcoholContent}}% <button (click)="editKeg(currentKeg)">Edit!</button></li>
     </ul>
     <hr>
     <div>
-      <div *ngIf = "selectedTask">
-        <h3>{{selectedTask.description}}</h3>
-        <p>Task Complete? {{selectedTask.done}}</p>
-        <h3>Edit Task</h3>
-        <label>Enter Task Description:</label>
-        <input [(ngModel)]="selectedTask.description">
-        <label>Enter Task Priority (1-3):</label>
-        <br>
-        <input type="radio" [(ngModel)]="selectedTask.priority" [value]="1">1 (Low Priority)<br>
-        <input type="radio" [(ngModel)]="selectedTask.priority" [value]="2">2 (Medium Priority)<br>
-        <input type="radio" [(ngModel)]="selectedTask.priority" [value]="3">3 (High Priority)
+      <div *ngIf = "selectedKeg">
+        <h3>Edit Keg: {{selectedKeg.name}}</h3>
+        <label>Keg Name:</label>
+        <input [(ngModel)]="selectedKeg.name"><br>
+        <label>Keg Brand:</label>
+        <input [(ngModel)]="selectedKeg.brand"><br>
+        <label>Keg Price(in cents):</label>
+        <input [(ngModel)]="selectedKeg.price" type="number"><br>
+        <label>Keg Alcohol Content(in percent):</label>
+        <input [(ngModel)]="selectedKeg.alcoholContent" type="number"><br>
         <button (click)="finishedEditing()">Done</button>
+      </div>
+      <div *ngIf = "newKeg">
+        <h3>Add a Keg</h3>
+        <label>Keg Name:</label>
+        <input [(ngModel)]="newKeg.name"><br>
+        <label>Keg Brand:</label>
+        <input [(ngModel)]="newKeg.brand"><br>
+        <label>Keg Price(in cents):</label>
+        <input [(ngModel)]="newKeg.price" type="number"><br>
+        <label>Keg Alcohol Content(in percent):</label>
+        <input [(ngModel)]="newKeg.alcoholContent" type="number"><br>
+        <button (click)="addKeg()">Add this keg</button>
       </div>
     </div>
   </div>
@@ -30,46 +41,50 @@ import { Component } from '@angular/core';
 })
 
 export class AppComponent {
-  currentFocus: string = 'Angular Homework';
-  currentTime = new Date();
-  month: number = this.currentTime.getMonth() + 1;
-  day: number = this.currentTime.getDate();
-  year: number = this.currentTime.getFullYear();
-  tasks: Task[] = [
-    new Task('Finish weekend Angular homework for Epicodus course', 3),
-    new Task('Begin brainstorming possible JavaScript group projects', 2),
-    new Task('Add README file to last few Angular repos on GitHub', 2)
+  kegs: Keg[] = [
+    new Keg('Moo1', 'Moocows', 2199, 20),
+    new Keg('Moo2', 'Moocows', 2499, 30),
+    new Keg('Moo3', 'Moocows', 99, 1)
   ];
-  selectedTask = null;
+  selectedKeg = null;
+  newKeg = null;
 
-  editTask(clickedTask) {
-    this.selectedTask = clickedTask;
+  addKeg() {
+    this.kegs.push(this.newKeg);
+    this.newKeg = null;
   }
 
-  isDone(clickedTask: Task) {
-    if(clickedTask.done === true) {
-      alert("This task is done!");
-    } else {
-      alert("This task is not done. Better get to work!");
-    }
-  }
-
-  priorityColor(currentTask){
-    if(currentTask.priority === 3) {
-      return "bg-danger";
-    } else if(currentTask.priority === 2) {
-      return  "bg-warning";
-    } else {
-      return "bg-info";
-    }
+  editKeg(clickedKeg) {
+    this.selectedKeg = clickedKeg;
   }
 
   finishedEditing() {
-    this.selectedTask = null;
+    this.selectedKeg = null;
+  }
+
+  showAddForm() {
+    this.newKeg = new Keg('', '', 0, 0);
   }
 }
 
-export class Task {
-  public done: boolean = false;
-  constructor(public description: string, public priority: number) { }
+export class Keg {
+  constructor(public name: string, public brand: string, public price: number, public alcoholContent: number) { }
+
+  getPrice() {
+    var priceArrays: string[] = this.price.toString().split('');
+    var resultArrays: string[] = [];
+    var counter: number = priceArrays.length;
+
+    resultArrays.push('$');
+    for(var numeral of priceArrays) {
+      if(counter === 2) {
+        resultArrays.push('.');
+      }
+      resultArrays.push(numeral);
+      counter--;
+    }
+    var resultString: string = resultArrays.join('');
+
+    return resultString;
+  }
 }
