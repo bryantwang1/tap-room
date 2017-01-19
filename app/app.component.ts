@@ -7,7 +7,7 @@ import { Component } from '@angular/core';
     <h1>Tap Room</h1>
     <button (click)="showAddForm()">Add a Keg</button>
     <ul>
-      <li *ngFor="let currentKeg of kegs">Name: {{currentKeg.name}}, Brand: {{currentKeg.brand}}, Price: {{currentKeg.getPrice()}}, Alcohol Content: {{currentKeg.alcoholContent}}% <button (click)="editKeg(currentKeg)">Edit!</button></li>
+      <li *ngFor="let currentKeg of kegs">Name: {{currentKeg.name}}, Brand: {{currentKeg.brand}}, Price: {{currentKeg.getPrice()}}, Alcohol Content: {{currentKeg.alcoholContent}}%, Pints Left: {{currentKeg.pintsLeft}} <button (click)="editKeg(currentKeg)">Edit!</button><button (click) = "currentKeg.decrementPint()">Take a Pint</button></li>
     </ul>
     <hr>
     <div>
@@ -68,6 +68,8 @@ export class AppComponent {
 }
 
 export class Keg {
+  public pintsLeft: number = 124;
+
   constructor(public name: string, public brand: string, public price: number, public alcoholContent: number) { }
 
   getPrice() {
@@ -86,5 +88,9 @@ export class Keg {
     var resultString: string = resultArrays.join('');
 
     return resultString;
+  }
+
+  decrementPint() {
+    this.pintsLeft--;
   }
 }
