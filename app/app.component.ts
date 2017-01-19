@@ -6,8 +6,10 @@ import { Component } from '@angular/core';
   <div class="container">
     <h1>Tap Room</h1>
     <button (click)="showAddForm()">Add a Keg</button>
+    <button (click)="colorByPrice()">Color by Price</button>
+    <button (click)="colorByAlcohol()">Color by Alcohol Content</button>
     <ul>
-      <li *ngFor="let currentKeg of kegs">Name: {{currentKeg.name}}, Brand: {{currentKeg.brand}}, Price: {{currentKeg.getPrice()}}, Alcohol Content: {{currentKeg.alcoholContent}}%, Pints Left: {{currentKeg.pintsLeft}} <button (click)="editKeg(currentKeg)">Edit!</button><button (click) = "currentKeg.decrementPint()">Take a Pint</button></li>
+      <li *ngFor="let currentKeg of kegs" [class]="whichColorCode(currentKeg)">Name: {{currentKeg.name}}, Brand: {{currentKeg.brand}}, Price: {{currentKeg.getPrice()}}, Alcohol Content: {{currentKeg.alcoholContent}}%, <span [class]="pintsLow(currentKeg)">Pints Left: {{currentKeg.pintsLeft}}</span> <button (click)="editKeg(currentKeg)">Edit!</button><button (click) = "currentKeg.decrementPint()">Take a Pint</button></li>
     </ul>
     <hr>
     <div>
@@ -42,12 +44,46 @@ import { Component } from '@angular/core';
 
 export class AppComponent {
   kegs: Keg[] = [
-    new Keg('Moo1', 'Moocows', 2199, 20),
-    new Keg('Moo2', 'Moocows', 2499, 30),
+    new Keg('Moo1', 'Moocows', 399, 20),
+    new Keg('Moo2', 'Moocows', 699, 60),
     new Keg('Moo3', 'Moocows', 99, 1)
   ];
   selectedKeg = null;
   newKeg = null;
+  colorCode: string = "none";
+
+  pintsLow(lowKeg) {
+    if(lowKeg.pintsLeft <= 10) {
+      return "red";
+    }
+  }
+
+  colorByPrice() {
+    this.colorCode = "price";
+  }
+
+  colorByAlcohol() {
+    this.colorCode = "alcohol";
+  }
+
+  whichColorCode(selectedKeg) {
+    if(this.colorCode === "price") {
+      if(selectedKeg.price >= 500) {
+        return "bg-danger";
+      } else {
+        return "bg-warning";
+      }
+    }
+    else if(this.colorCode === "alcohol") {
+      if(selectedKeg.alcoholContent >= 40) {
+        return "bg-danger";
+      } else if(selectedKeg.alcoholContent >= 20) {
+        return "bg-warning";
+      } else {
+        return "bg-info";
+      }
+    }
+  }
 
   addKeg() {
     this.kegs.push(this.newKeg);
